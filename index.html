@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Calculadora" />
+  <title>Calculadora</title>
+
+  <link rel="manifest" href="manifest.webmanifest" />
+
+  <style>
+    :root {
+      --bg: #111827;
+      --panel: #1f2937;
+      --text: #ffffff;
+      --muted: #d1d5db;
+      --orange: #f97316;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --white: #ffffff;
+      --dark-text: #111827;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100svh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    main {
+      width: min(100%, 520px);
+      min-height: 100svh;
+      display: grid;
+      grid-template-rows: repeat(5, 1fr);
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .row {
+      border: 0;
+      border-radius: 22px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+      user-select: none;
+      touch-action: manipulation;
+      cursor: pointer;
+      transition: transform 0.08s ease, filter 0.08s ease;
+    }
+
+    .row:active {
+      transform: scale(0.985);
+      filter: brightness(0.94);
+    }
+
+    .name {
+      font-size: clamp(1.5rem, 8vw, 2.8rem);
+      font-weight: 900;
+      line-height: 1;
+      text-align: left;
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .qty {
+      min-width: 72px;
+      min-height: 72px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.22);
+      color: inherit;
+      display: grid;
+      place-items: center;
+      font-size: clamp(2rem, 10vw, 4rem);
+      font-weight: 950;
+      line-height: 1;
+      border: 3px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .price {
+      font-size: clamp(1.1rem, 5vw, 2rem);
+      font-weight: 850;
+      opacity: 0.95;
+      white-space: nowrap;
+    }
+
+    .orange {
+      background: var(--orange);
+      color: white;
+    }
+
+    .blue {
+      background: var(--blue);
+      color: white;
+    }
+
+    .green {
+      background: var(--green);
+      color: white;
+    }
+
+    .white {
+      background: var(--white);
+      color: var(--dark-text);
+    }
+
+    .white .qty {
+      background: rgba(17, 24, 39, 0.08);
+      border-color: rgba(17, 24, 39, 0.12);
+    }
+
+    .total {
+      background: var(--panel);
+      color: white;
+      grid-template-columns: 1fr auto;
+    }
+
+    .total .name {
+      font-size: clamp(1.6rem, 8vw, 3rem);
+    }
+
+    .amount {
+      font-size: clamp(2.4rem, 13vw, 5rem);
+      font-weight: 1000;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .hint {
+      position: fixed;
+      left: 50%;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: calc(100% - 20px);
+      max-width: 500px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    @media (max-height: 620px) {
+      main {
+        gap: 7px;
+        padding: 7px;
+      }
+
+      .row {
+        border-radius: 16px;
+        padding: 10px;
+      }
+
+      .qty {
+        min-width: 56px;
+        min-height: 56px;
+        border-radius: 14px;
+      }
+
+      .hint {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main aria-label="Calculadora senzilla">
+    <button class="row orange" type="button" data-key="refresc" aria-label="Sumar refresc">
+      <span class="name">Refresc</span>
+      <span class="right">
+        <span class="price">1,5 €</span>
+        <span class="qty" data-count="refresc" aria-label="Quantitat de refresc">0</span>
+      </span>
+    </button>
+
+    <button class="row blue" type="button" data-key="aigua" aria-label="Sumar aigua">
+      <span class="name">Aigua</span>
+      <span class="right">
+        <span class="price">1 €</span>
+        <span class="qty" data-count="aigua" aria-label="Quantitat d'aigua">0</span>
+      </span>
+    </button>
+
+    <button class="row green" type="button" data-key="menjar" aria-label="Sumar menjar">
+      <span class="name">Menjar</span>
+      <span class="right">
+        <span class="price">3 €</span>
+        <span class="qty" data-count="menjar" aria-label="Quantitat de menjar">0</span>
+      </span>
+    </button>
+
+    <button class="row white" type="button" data-key="rifa" aria-label="Sumar rifa">
+      <span class="name">Rifa</span>
+      <span class="right">
+        <span class="price">1,5 €</span>
+        <span class="qty" data-count="rifa" aria-label="Quantitat de rifa">0</span>
+      </span>
+    </button>
+
+    <button class="row total" type="button" id="reset" aria-label="Posar tot a zero">
+      <span class="name">Total</span>
+      <span class="amount" id="total">0 €</span>
+    </button>
+  </main>
+
+  <div class="hint">Toca el nom per sumar. Toca el número per restar. Toca Total per posar-ho tot a zero.</div>
+
+  <script>
+    const products = {
+      refresc: { price: 1.5, count: 0 },
+      aigua: { price: 1, count: 0 },
+      menjar: { price: 3, count: 0 },
+      rifa: { price: 1.5, count: 0 }
+    };
+
+    const totalElement = document.getElementById("total");
+
+    function formatEuros(value) {
+      return new Intl.NumberFormat("ca-ES", {
+        minimumFractionDigits: value % 1 === 0 ? 0 : 1,
+        maximumFractionDigits: 2
+      }).format(value) + " €";
+    }
+
+    function updateScreen() {
+      let total = 0;
+
+      for (const key of Object.keys(products)) {
+        const item = products[key];
+        total += item.price * item.count;
+        document.querySelector(`[data-count="${key}"]`).textContent = item.count;
+      }
+
+      totalElement.textContent = formatEuros(total);
+    }
+
+    document.querySelectorAll(".row[data-key]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const key = button.dataset.key;
+        const clickedNumber = event.target.closest(".qty");
+
+        if (clickedNumber) {
+          products[key].count = Math.max(0, products[key].count - 1);
+        } else {
+          products[key].count += 1;
+        }
+
+        updateScreen();
+      });
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      for (const key of Object.keys(products)) {
+        products[key].count = 0;
+      }
+      updateScreen();
+    });
+
+    updateScreen();
+
+    if ("serviceWorker" in navigator) {
+      const swCode = `
+        const CACHE_NAME = "calculadora-pwa-v1";
+        const FILES = ["./"];
+
+        self.addEventListener("install", event => {
+          event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES)));
+          self.skipWaiting();
+        });
+
+        self.addEventListener("activate", event => {
+          event.waitUntil(self.clients.claim());
+        });
+
+        self.addEventListener("fetch", event => {
+          event.respondWith(
+            caches.match(event.request).then(response => response || fetch(event.request))
+          );
+        });
+      `;
+
+      const blob = new Blob([swCode], { type: "text/javascript" });
+      const swUrl = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(swUrl).catch(() => {});
+    }
+  </script>
+</body>
+</html>
